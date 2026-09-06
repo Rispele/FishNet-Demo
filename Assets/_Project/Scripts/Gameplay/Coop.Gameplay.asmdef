@@ -1,0 +1,20 @@
+{
+    "name": "Coop.Gameplay",
+    "rootNamespace": "Coop.Gameplay",
+    "references": [
+        "Coop.Core",
+        "Coop.Networking",
+        "FishNet.Runtime",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

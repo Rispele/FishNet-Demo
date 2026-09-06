@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c2fcfe3f95dc7545bb0e0d402787e3f, type: 3}
+  m_Name: AppConfig
+  m_EditorClassIdentifier: Coop.Core::Coop.Core.Config.AppConfig
+  _steamAppId: 480
+  _buildId: coop-demo-1
+  _maxPlayers: 4
+  _forceLanMode: 0
+  _lanAddress: 127.0.0.1

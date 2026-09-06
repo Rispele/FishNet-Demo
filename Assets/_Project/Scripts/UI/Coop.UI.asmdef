@@ -1,0 +1,22 @@
+{
+    "name": "Coop.UI",
+    "rootNamespace": "Coop.UI",
+    "references": [
+        "Coop.Core",
+        "Coop.Networking",
+        "Coop.App",
+        "FishNet.Runtime",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

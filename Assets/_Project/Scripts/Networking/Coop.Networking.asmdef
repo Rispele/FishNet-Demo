@@ -1,0 +1,17 @@
+{
+    "name": "Coop.Networking",
+    "rootNamespace": "Coop.Networking",
+    "references": [
+        "Coop.Core",
+        "FishNet.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

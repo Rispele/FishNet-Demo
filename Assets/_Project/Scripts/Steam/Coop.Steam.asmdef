@@ -1,0 +1,16 @@
+{
+    "name": "Coop.Steam",
+    "rootNamespace": "Coop.Steam",
+    "references": [
+        "Coop.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

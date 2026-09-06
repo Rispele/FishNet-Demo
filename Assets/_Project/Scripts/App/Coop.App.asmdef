@@ -1,0 +1,19 @@
+{
+    "name": "Coop.App",
+    "rootNamespace": "Coop.App",
+    "references": [
+        "Coop.Core",
+        "Coop.Steam",
+        "Coop.Networking",
+        "FishNet.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
