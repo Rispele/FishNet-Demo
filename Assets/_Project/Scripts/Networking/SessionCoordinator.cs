@@ -27,6 +27,19 @@ namespace Coop.Networking
     /// Это и есть «server authoritative» модель, на которой построен FishNet.
     ///
     /// Объект помечен IsGlobal, поэтому переживает смену сетевых сцен и виден всем клиентам.
+    ///
+    /// ───────── ГДЕ ЧТО ВЫПОЛНЯЕТСЯ ─────────
+    ///
+    /// Экземпляр этого класса есть у каждого участника, но занимаются они разным:
+    ///
+    ///   на СЕРВЕРЕ  — вся логика: спавн, смена сцен, проверка прав, состав сессии;
+    ///   на КЛИЕНТЕ  — только чтение фазы (Phase) и отправка просьб через [ServerRpc].
+    ///
+    /// Ни одно поле здесь не меняется клиентом. Если вы читаете метод и не уверены, где он
+    /// работает, — смотрите на регион, в котором он лежит: они разделены именно по этому
+    /// признаку. Подписки на события SceneManager/ServerManager сделаны в OnStartServer,
+    /// то есть у клиента этих подписок нет вообще и соответствующие обработчики у него
+    /// не вызываются никогда.
     /// </summary>
     [RequireComponent(typeof(NetworkObject))]
     public sealed class SessionCoordinator : NetworkBehaviour
@@ -71,6 +84,9 @@ namespace Coop.Networking
         /// <summary>Фаза изменилась (для UI).</summary>
         public event Action<SessionPhase> PhaseChanged;
 
+        #region ВЕЗДЕ: жизненный цикл
+
+        /// <summary>Выполняется: и на сервере, и на клиенте (на хосте — один раз).</summary>
         public override void OnStartNetwork()
         {
             Instance = this;
@@ -78,6 +94,7 @@ namespace Coop.Networking
             InstanceChanged?.Invoke(this);
         }
 
+        /// <summary>Выполняется: и на сервере, и на клиенте.</summary>
         public override void OnStopNetwork()
         {
             phase.OnChange -= HandlePhaseChanged;
@@ -89,6 +106,17 @@ namespace Coop.Networking
             }
         }
 
+        #endregion
+
+        #region ТОЛЬКО СЕРВЕР: подписки на события сессии
+
+        /// <summary>
+        /// Выполняется: только на сервере (на хосте — тоже, он ведь и сервер).
+        ///
+        /// Здесь оформляются все подписки, из которых растёт серверная логика. У чистого
+        /// клиента этот метод не вызывается, поэтому обработчики ниже у него не сработают
+        /// ни при каких обстоятельствах.
+        /// </summary>
         public override void OnStartServer()
         {
             sessionManager = FindAnyObjectByType<SessionManager>();
@@ -106,6 +134,7 @@ namespace Coop.Networking
             ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
         }
 
+        /// <summary>Выполняется: только на сервере. Симметрично OnStartServer.</summary>
         public override void OnStopServer()
         {
             SceneManager.OnClientLoadedStartScenes -= HandleClientLoadedStartScenes;
@@ -115,7 +144,13 @@ namespace Coop.Networking
             characters.Clear();
         }
 
-        #region Client requests
+        #endregion
+
+        #region ВЫЗЫВАЕТСЯ НА КЛИЕНТЕ → ВЫПОЛНЯЕТСЯ НА СЕРВЕРЕ
+
+        /* Методы ниже клиент вызывает как обычные, но их тело исполняется на сервере:
+         * кодогенератор FishNet подменяет вызов на отправку пакета. Поэтому внутри
+         * нельзя трогать локальный UI и нельзя доверять входным данным. */
 
         /// <summary>
         /// Просьба клиента начать матч.
@@ -157,7 +192,11 @@ namespace Coop.Networking
 
         #endregion
 
-        #region Server flow
+        #region ТОЛЬКО СЕРВЕР: логика сессии
+
+        /* Ни один метод в этом регионе не вызывается на клиенте: они либо приватные и
+         * дёргаются из [ServerRpc] выше, либо являются обработчиками событий, подписка
+         * на которые оформлена в OnStartServer. */
 
         private void StartMatch()
         {
@@ -299,18 +338,30 @@ namespace Coop.Networking
 
         #endregion
 
+        #region ВЕЗДЕ: вспомогательное
+
         /// <summary>
+        /// Выполняется: на сервере (валидация RPC) и на клиенте (подсветка хоста в UI).
         /// Хост — единственное соединение, которое одновременно является локальным клиентом сервера.
         /// </summary>
         private bool IsHostConnection(NetworkConnection connection)
             => connection != null && NetworkManager.IsServerStarted && NetworkManager.ClientManager.Connection == connection;
 
+        /// <summary>
+        /// Выполняется: и на сервере, и на клиенте.
+        ///
+        /// Хороший пример того, как «сервер и клиент в одном процессе» приходится учитывать
+        /// явно: на хосте OnChange срабатывает дважды — сначала с asServer = true, затем
+        /// с asServer = false. Без фильтра UI получил бы два события на одно изменение.
+        /// </summary>
         private void HandlePhaseChanged(SessionPhase previous, SessionPhase next, bool asServer)
         {
             if (asServer && NetworkManager.IsHostStarted)
-                return; // На хосте событие придёт вторым вызовом (asServer = false), чтобы не дублировать.
+                return;
 
             PhaseChanged?.Invoke(next);
         }
+
+        #endregion
     }
 }
